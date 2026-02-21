@@ -7,94 +7,188 @@ const store = useGameStore();
 const hasHistory = computed(() => store.history.length > 0);
 const tribute = computed(() => store.lastTribute);
 
-// 四块位置：grid 顺序 [左顶, 右顶, 左底, 右底] = [red0, blue0, red1, blue1]
-const blocks = computed(() => {
-  if (!tribute.value) {
-    return [
-      { rank: null, team: 'red' as const },
-      { rank: null, team: 'blue' as const },
-      { rank: null, team: 'red' as const },
-      { rank: null, team: 'blue' as const },
-    ];
-  }
+// 辅助：根据排名找队伍
+const findTeamByRank = (r: { red: number[], blue: number[] }, rank: number): 'red' | 'blue' | null => {
+  if (r.red.includes(rank)) return 'red';
+  if (r.blue.includes(rank)) return 'blue';
+  return null;
+};
+
+// 统一的事件结构
+interface TributeItem {
+  from: 'red' | 'blue';
+  to: 'red' | 'blue';
+  type: 'gold' | 'silver';
+  label: string;
+  subLabel?: string;
+  fromLabel: string;
+  toLabel: string;
+}
+
+const tributeItems = computed<TributeItem[]>(() => {
+  if (!tribute.value || !hasHistory.value) return [];
   const r = tribute.value.rankings;
-  return [
-    { rank: r.red[0], team: 'red' as const },
-    { rank: r.blue[0], team: 'blue' as const },
-    { rank: r.red[1], team: 'red' as const },
-    { rank: r.blue[1], team: 'blue' as const },
-  ];
+  const items: TributeItem[] = [];
+
+  if (tribute.value.type === 'single') {
+    const from = findTeamByRank(r, 4);
+    const to = findTeamByRank(r, 1);
+    if (from && to) {
+      items.push({
+        from, to,
+        type: 'gold',
+        label: '进贡',
+        fromLabel: '末游',
+        toLabel: '头游'
+      });
+    }
+  } else if (tribute.value.type === 'double') {
+    const loser = findTeamByRank(r, 4);
+    const winner = findTeamByRank(r, 1);
+    
+    if (loser && winner) {
+      // 1. 进大牌 (输家 -> 头游)
+      items.push({
+        from: loser,
+        to: winner,
+        type: 'gold',
+        label: '进大',
+        subLabel: '下局先出',
+        fromLabel: '末游',
+        toLabel: '头游'
+      });
+      // 2. 进小牌 (输家 -> 二游)
+      items.push({
+        from: loser,
+        to: winner,
+        type: 'silver',
+        label: '进小',
+        fromLabel: '三游',
+        toLabel: '二游'
+      });
+    }
+  }
+  return items;
 });
 
-// 连接线：单贡 4→1；双贡 4→1、3→2
-const lines = computed(() => {
-  if (!tribute.value || !hasHistory.value) return [];
-  const [lt, rt, lb, rb] = blocks.value;
-  const positions = [
-    { rank: lt.rank!, x: 25, y: 25 },
-    { rank: rt.rank!, x: 75, y: 25 },
-    { rank: lb.rank!, x: 25, y: 75 },
-    { rank: rb.rank!, x: 75, y: 75 },
-  ];
-  const byRank = Object.fromEntries(positions.map((p) => [p.rank, p]));
-  const result: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  if (byRank[4] && byRank[1]) {
-    result.push({
-      x1: byRank[4].x,
-      y1: byRank[4].y,
-      x2: byRank[1].x,
-      y2: byRank[1].y,
-    });
-  }
-  if (tribute.value.type === 'double' && byRank[3] && byRank[2]) {
-    result.push({
-      x1: byRank[3].x,
-      y1: byRank[3].y,
-      x2: byRank[2].x,
-      y2: byRank[2].y,
-    });
-  }
-  return result;
-});
+// 样式辅助
+const teamColorClass = (team: 'red' | 'blue') => {
+  return team === 'red' ? 'text-guandan-red bg-guandan-red/10 border-guandan-red/20' : 'text-guandan-blue bg-guandan-blue/10 border-guandan-blue/20';
+};
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-2 py-2">
-    <!-- 四方块 + 连接线 -->
-    <div class="relative w-32 h-24 sm:w-36 sm:h-28">
-      <!-- 连接线 (SVG 覆盖) -->
-      <svg
-        v-if="hasHistory && lines.length > 0"
-        class="absolute inset-0 w-full h-full pointer-events-none"
-        preserveAspectRatio="none"
+  <div class="w-full h-full flex flex-col items-center justify-center py-2 px-4">
+    <!-- 空状态 -->
+    <div 
+      v-if="!hasHistory" 
+      class="flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 space-y-2 opacity-60"
+    >
+      <div class="w-12 h-12 rounded-full border-2 border-dashed border-current flex items-center justify-center">
+        <span class="text-xs">VS</span>
+      </div>
+      <span class="text-xs font-medium">等待开局</span>
+    </div>
+
+    <!-- 列表展示 (单贡/双贡通用) -->
+    <div v-else class="w-full max-w-xs flex flex-col gap-3">
+      <div 
+        v-for="(item, index) in tributeItems" 
+        :key="index"
+        class="flex items-center justify-between bg-white/50 dark:bg-white/5 rounded-full p-1.5 pr-4 shadow-sm border border-white/20 backdrop-blur-sm"
       >
-        <line
-          v-for="(line, i) in lines"
-          :key="i"
-          :x1="`${line.x1}%`"
-          :y1="`${line.y1}%`"
-          :x2="`${line.x2}%`"
-          :y2="`${line.y2}%`"
-          stroke="#6b7280"
-          stroke-width="1"
-        />
-      </svg>
-      <!-- 4 块 -->
-      <div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
-        <div
-          v-for="(block, i) in blocks"
-          :key="i"
-          class="flex items-center justify-center rounded border-2 border-white/30 min-h-0 transition-all duration-200"
-          :class="hasHistory ? (block.team === 'red' ? 'bg-[#9e0000]' : 'bg-[#0C359E]') : 'bg-gray-500'"
-        >
-          <span
-            v-if="hasHistory && block.rank != null"
-            class="text-white text-lg font-bold"
+        <!-- 进贡方 -->
+        <div class="flex items-center gap-2">
+          <div 
+            class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border shadow-sm"
+            :class="teamColorClass(item.from)"
           >
-            {{ block.rank }}
-          </span>
+            {{ item.from === 'red' ? '红' : '蓝' }}
+          </div>
+          <span class="text-[10px] text-gray-500 font-medium w-6 text-center">{{ item.fromLabel }}</span>
+        </div>
+
+        <!-- 动态箭头 -->
+        <div class="flex-1 flex flex-col items-center px-1 relative">
+          <!-- 文字标签 -->
+          <div class="flex flex-col items-center mb-1">
+            <span 
+              class="text-[10px] font-bold leading-none"
+              :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+            >
+              {{ item.label }}
+            </span>
+            <span 
+              v-if="item.subLabel" 
+              class="text-[8px] scale-90 leading-none mt-0.5 opacity-80"
+              :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+            >
+              {{ item.subLabel }}
+            </span>
+          </div>
+
+          <!-- 箭头轨道 -->
+          <div class="relative w-full h-[14px] flex items-center justify-center overflow-hidden">
+             <!-- 轨道线 -->
+             <div class="absolute inset-x-0 h-[1px] bg-gray-200 dark:bg-gray-700 top-1/2 -translate-y-1/2"></div>
+             
+             <!-- 流光动画 -->
+             <div 
+               class="absolute top-1/2 -translate-y-1/2 h-[2px] w-12 rounded-full blur-[1px] animate-shuttle"
+               :class="item.type === 'gold' ? 'bg-[#D4AF37]' : 'bg-gray-400'"
+             ></div>
+
+             <!-- 箭头头 (心跳动画) -->
+             <svg 
+               viewBox="0 0 24 24" 
+               class="w-3 h-3 absolute right-0 top-1/2 -translate-y-1/2 animate-pulse-fast transform-origin-center"
+               :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+               fill="currentColor"
+             >
+               <path d="M12 2L20 12L12 22" stroke="none" />
+             </svg>
+          </div>
+        </div>
+
+        <!-- 受贡方 -->
+        <div class="flex items-center gap-2 flex-row-reverse">
+          <div 
+            class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border shadow-sm relative"
+            :class="teamColorClass(item.to)"
+          >
+            {{ item.to === 'red' ? '红' : '蓝' }}
+            <!-- 皇冠 -->
+            <div v-if="item.type === 'gold'" class="absolute -top-3 text-[#D4AF37] drop-shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <span class="text-[10px] text-gray-500 font-medium w-6 text-center">{{ item.toLabel }}</span>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes shuttle {
+  0% { transform: translate(-150%, -50%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translate(150%, -50%); opacity: 0; }
+}
+
+.animate-shuttle {
+  animation: shuttle 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse-fast {
+  0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+  50% { transform: translateY(-50%) scale(1.2); opacity: 0.8; }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  transform-origin: center;
+}
+</style>

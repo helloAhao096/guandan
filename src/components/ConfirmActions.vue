@@ -11,28 +11,30 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex gap-1 w-full" style="max-width: 120px">
+  <div class="flex flex-col gap-2 w-full mt-auto">
+    <!-- 撤销按钮：次级操作，幽灵按钮，放在确认上方 -->
     <button
       type="button"
-      class="flex-1 aspect-square rounded-lg border-2 border-gray-400 font-medium transition-colors duration-200 flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="canUndo ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-gray-100 text-gray-400'"
+      class="w-full py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center text-sm active:scale-95 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+      :class="!canUndo ? 'opacity-0 pointer-events-none' : ''"
       :disabled="!canUndo"
       @click="emit('undo')"
+      title="撤销上一步"
     >
-      回退
+      <span class="mr-1">↺</span> 撤销
     </button>
+
+    <!-- 确认按钮：主要操作，高亮，加大，放在最底部 -->
     <button
       type="button"
-      class="flex-1 aspect-square rounded-lg border-2 font-medium transition-colors duration-200 flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="
-        canConfirm
-          ? 'border-[#0C359E] bg-[#0C359E] text-white hover:bg-[#0C359E]/90'
-          : 'border-gray-300 bg-gray-200 text-gray-500'
-      "
+      class="w-full py-4 rounded-2xl font-bold transition-all duration-200 flex items-center justify-center text-lg shadow-sm active:scale-95 active:shadow-none min-h-[64px]"
+      :class="canConfirm
+        ? 'bg-black text-white hover:bg-gray-800 shadow-md dark:bg-white dark:text-black'
+        : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
       :disabled="!canConfirm"
       @click="emit('confirm')"
     >
-      ✓
+      确认
     </button>
   </div>
 </template>
