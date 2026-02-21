@@ -11,7 +11,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 w-full mt-auto">
+  <div class="flex flex-col gap-1.5 w-full mt-auto">
     <!-- 撤销按钮：次级操作，幽灵按钮，放在确认上方 -->
     <button
       type="button"

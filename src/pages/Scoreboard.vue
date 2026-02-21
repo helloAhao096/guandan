@@ -33,7 +33,7 @@ const { showRotatePrompt } = useDeviceAdapt();
         </aside>
 
         <!-- 中央区域：卡片 + 进贡区 -->
-        <section class="flex flex-col flex-1 items-stretch justify-center gap-4 min-w-0 max-w-md w-full mx-auto">
+        <section class="flex flex-col flex-1 items-stretch justify-center gap-3 sm:gap-5 min-w-0 max-w-md w-full mx-auto">
           <!-- ScoreCard 占 3/4 -->
           <div class="flex-[3] min-h-0 flex flex-col">
             <ScoreCard class="flex-1 w-full" />

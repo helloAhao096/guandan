@@ -35,7 +35,7 @@ const canUndo = computed(() => store.history.length > 0);
 </script>
 
 <template>
-  <div class="flex flex-col-reverse items-center gap-4 w-full max-w-[160px] pb-2">
+  <div class="flex flex-col-reverse items-center gap-3 w-full max-w-[160px] pb-2">
     <!-- 确认/撤销操作区 (最底层) -->
     <ConfirmActions
       class="transition-opacity duration-200 w-full"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useGameStore } from '../store/gameStore';
+import { DotLottieVue } from '@lottiefiles/dotlottie-vue';
 
 const store = useGameStore();
 
@@ -41,7 +42,7 @@ const bgClass = () => {
 
 <template>
   <div
-    class="relative flex flex-col items-center justify-center w-full h-full rounded-3xl px-8 py-6 transition-all duration-500 transform hover:scale-[1.02] overflow-hidden group"
+    class="relative flex flex-col items-center justify-center w-full h-full rounded-3xl px-6 py-4 sm:px-8 sm:py-6 transition-all duration-500 transform hover:scale-[1.02] overflow-hidden group"
     :class="cardClass()"
   >
     <!-- 背景装饰：巨大的虚化色块，随阵营变化 -->
@@ -50,11 +51,24 @@ const bgClass = () => {
       :class="bgClass()"
     ></div>
 
-    <!-- 标签：当前级数 -->
-    <span class="relative z-10 text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-4 opacity-80">
-      Current Level
-    </span>
-    
+    <!-- 皇冠 Lottie：游戏结束（过 A 胜利）时显示，使用高度过渡避免挤压下方分数 -->
+    <div
+      class="overflow-hidden transition-[max-height] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      :style="{ maxHeight: store.isGameOver ? '18vmin' : '0px' }"
+    >
+      <div class="relative z-10 w-[20vmin] h-[20vmin] min-w-[72px] min-h-[72px] mx-auto flex items-center justify-center">
+        <Transition name="crown-inner">
+          <DotLottieVue
+            v-if="store.isGameOver"
+            style="height: 100%; width: 100%"
+            autoplay
+            loop
+            src="/animations/Crown Drop.lottie"
+          />
+        </Transition>
+      </div>
+    </div>
+
     <!-- 大数字 -->
     <!-- 使用 key 触发数字切换动画 -->
     <Transition name="slide-fade" mode="out-in">
@@ -72,7 +86,7 @@ const bgClass = () => {
     </Transition>
 
     <!-- 底部微小的装饰性指示条 -->
-    <div class="absolute bottom-6 flex gap-1">
+    <div class="absolute bottom-4 sm:bottom-5 flex gap-1">
       <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
       <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
       <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
@@ -99,5 +113,21 @@ const bgClass = () => {
   transform: translateY(-30px) scale(1.1);
   opacity: 0;
   filter: blur(4px);
+}
+
+/* 皇冠容器高度过渡：为分数区域预留空间，避免突兀挤压 */
+/* 皇冠内部：延迟淡入 + 轻微缩放，与容器展开同步 */
+.crown-inner-enter-active {
+  transition: opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+}
+.crown-inner-enter-from {
+  opacity: 0;
+  transform: scale(0.7);
+}
+.crown-inner-leave-active {
+  transition: opacity 0.25s ease;
+}
+.crown-inner-leave-to {
+  opacity: 0;
 }
 </style>

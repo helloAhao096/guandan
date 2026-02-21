@@ -30,7 +30,7 @@ function handleClick(opt: { value: RoundResult }) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3 w-full">
+  <div class="flex flex-col gap-2 w-full">
     <button
       v-for="opt in displayOptions"
       :key="opt.value"
