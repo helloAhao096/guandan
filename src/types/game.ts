@@ -12,7 +12,6 @@ export type Level =
   | 'Q'
   | 'K'
   | 'A'
-  | 'A1'
   | 'A2'
   | 'A3';
 

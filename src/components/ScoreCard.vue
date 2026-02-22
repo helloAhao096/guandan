@@ -8,25 +8,15 @@ const store = useGameStore();
 const isGameStarted = computed(() => store.history.length > 0);
 
 const cardClass = () => {
-  // 基础卡片样式：iOS 风格圆角 + 阴影 + 毛玻璃
-  let borderClass = 'border-white/20 dark:border-white/5';
-  
-  if (!isGameStarted.value) {
-    // 未开始：黑灰色荧光边框
-    borderClass = 'border-gray-500/30 shadow-[0_0_20px_-5px_rgba(100,100,100,0.3)]';
-  } else if (store.attacker === 'red') {
-    borderClass = 'border-guandan-red/30 shadow-[0_0_30px_-10px_var(--color-guandan-red)]';
-  } else if (store.attacker === 'blue') {
-    borderClass = 'border-guandan-blue/30 shadow-[0_0_30px_-10px_var(--color-guandan-blue)]';
-  }
-
-  return `bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl shadow-xl border ${borderClass}`;
+  // 基础卡片样式：去除边框，保留背景和毛玻璃
+  // 外框由 LevelProgressBars 组件提供
+  return `bg-neutral-800/80 backdrop-blur-xl`;
 };
 
 const textClass = () => {
   if (!isGameStarted.value) {
     // 未开始：黑灰色荧光文字
-    return 'text-gray-400 dark:text-gray-500 drop-shadow-[0_0_8px_rgba(150,150,150,0.3)]';
+    return 'text-gray-500 drop-shadow-[0_0_8px_rgba(150,150,150,0.3)]';
   }
   // 使用 CSS 变量颜色，并增加发光效果
   return store.attacker === 'red' 
@@ -42,13 +32,14 @@ const bgClass = () => {
 
 <template>
   <div
-    class="relative flex flex-col items-center justify-center w-full h-full rounded-3xl px-6 py-4 sm:px-8 sm:py-6 transition-all duration-500 transform hover:scale-[1.02] overflow-hidden group"
+    class="relative flex flex-col items-center justify-center w-full h-full min-h-0 flex-1 rounded-3xl px-6 py-4 sm:px-8 sm:py-6 overflow-hidden self-center transform-gpu"
     :class="cardClass()"
   >
     <!-- 背景装饰：巨大的虚化色块，随阵营变化 -->
     <div 
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 rounded-full blur-[80px] opacity-20 transition-colors duration-700 pointer-events-none"
+      class="absolute top-1/2 left-1/2 w-3/4 h-3/4 rounded-full blur-[40px] sm:blur-[80px] opacity-20 transition-colors duration-700 pointer-events-none"
       :class="bgClass()"
+      style="transform: translate3d(-50%, -50%, 0)"
     ></div>
 
     <!-- 皇冠 Lottie：游戏结束（过 A 胜利）时显示，使用高度过渡避免挤压下方分数 -->
@@ -56,7 +47,7 @@ const bgClass = () => {
       class="overflow-hidden transition-[max-height] duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
       :style="{ maxHeight: store.isGameOver ? '18vmin' : '0px' }"
     >
-      <div class="relative z-10 w-[20vmin] h-[20vmin] min-w-[72px] min-h-[72px] mx-auto flex items-center justify-center">
+      <div class="relative z-10 w-[20vmin] h-[20vmin] min-w-[60px] min-h-[60px] sm:min-w-[72px] sm:min-h-[72px] mx-auto flex items-center justify-center">
         <Transition name="crown-inner">
           <DotLottieVue
             v-if="store.isGameOver"
@@ -69,32 +60,34 @@ const bgClass = () => {
       </div>
     </div>
 
-    <!-- 大数字 -->
+    <!-- 大数字：按视口比例自适应，占满可用空间 -->
     <!-- 使用 key 触发数字切换动画 -->
     <Transition name="slide-fade" mode="out-in">
       <div 
         :key="store.currentLevel"
-        class="relative z-10 flex items-center justify-center"
+        class="relative z-10 flex flex-1 items-center justify-center min-h-0"
       >
         <span 
-          class="text-8xl sm:text-9xl md:text-[10rem] font-thin select-none tabular-nums transition-colors duration-300 block leading-none tracking-tighter"
+          class="score-number font-bold select-none tabular-nums transition-colors duration-300 block leading-none tracking-tight"
           :class="textClass()"
         >
           {{ store.currentLevel }}
         </span>
       </div>
     </Transition>
-
-    <!-- 底部微小的装饰性指示条 -->
-    <div class="absolute bottom-4 sm:bottom-5 flex gap-1">
-      <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
-      <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
-      <div class="w-1 h-1 rounded-full bg-current opacity-20"></div>
-    </div>
   </div>
 </template>
 
 <style scoped>
+/* 分数数字：按视口比例自适应
+ * - 移动端横屏/小屏：~20vmin，保证可读且不溢出
+ * - 常规桌面：~24vmin，突出主视觉
+ * - 超宽/大屏：clamp 上限 16rem 避免过大
+ */
+.score-number {
+  font-size: clamp(3.5rem, 22vmin, 16rem);
+}
+
 .slide-fade-enter-active {
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性效果 */
 }

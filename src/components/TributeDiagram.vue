@@ -82,7 +82,7 @@ const teamColorClass = (team: 'red' | 'blue') => {
     <!-- 空状态 -->
     <div 
       v-if="!hasHistory" 
-      class="flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 space-y-2 opacity-60"
+      class="flex flex-col items-center justify-center text-gray-600 space-y-2 opacity-60"
     >
       <div class="w-12 h-12 rounded-full border-2 border-dashed border-current flex items-center justify-center">
         <span class="text-xs">VS</span>
@@ -95,7 +95,7 @@ const teamColorClass = (team: 'red' | 'blue') => {
       <div 
         v-for="(item, index) in tributeItems" 
         :key="index"
-        class="flex items-center justify-between bg-white/50 dark:bg-white/5 rounded-full p-1.5 pr-4 shadow-sm border border-white/20 backdrop-blur-sm"
+        class="flex items-center justify-between bg-white/5 rounded-full p-1.5 pr-4 shadow-sm border border-white/20 backdrop-blur-sm"
       >
         <!-- 进贡方 -->
         <div class="flex items-center gap-2">
@@ -130,7 +130,7 @@ const teamColorClass = (team: 'red' | 'blue') => {
           <!-- 箭头轨道 -->
           <div class="relative w-full h-[14px] flex items-center justify-center overflow-hidden">
              <!-- 轨道线 -->
-             <div class="absolute inset-x-0 h-[1px] bg-gray-200 dark:bg-gray-700 top-1/2 -translate-y-1/2"></div>
+             <div class="absolute inset-x-0 h-[1px] bg-gray-700 top-1/2 -translate-y-1/2"></div>
              
              <!-- 流光动画 -->
              <div 

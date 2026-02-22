@@ -2,12 +2,14 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Attacker, RoundResult, GameSnapshot, TributeRelation } from '../types/game';
 
-// 2 到 A，再 A1/A2/A3（打A头游+末游时递进，A3 再不过则回2）
-export const LEVELS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'A1', 'A2', 'A3'];
-const A_INDEX = 12;
-const A1_INDEX = 13;
-const A2_INDEX = 14;
-const A3_INDEX = 15;
+// 2 到 A，再 A2/A3（打A头游+末游时递进，A3 再不过则回2）
+// 索引: 0..11 (2..K), 12 (A), 13 (A2), 14 (A3)
+export const LEVELS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'A2', 'A3'];
+
+// 导出常量供 composables 使用
+export const A_INDEX = 12;
+export const A2_INDEX = 13;
+export const A3_INDEX = 14;
 
 export const useGameStore = defineStore('game', () => {
   const redLevelIndex = ref(0);
@@ -26,103 +28,38 @@ export const useGameStore = defineStore('game', () => {
 
   const isTie = computed(() => redLevelIndex.value === blueLevelIndex.value);
 
-  // 单侧选择：点击哪侧传哪方；过A 后不可再选
-  function selectResult(winner: 'red' | 'blue', result: RoundResult) {
-    if (isGameOver.value) return;
+  // 状态更新 actions (原子操作)
+  function setLevel(side: 'red' | 'blue', levelIndex: number) {
+    if (side === 'red') redLevelIndex.value = levelIndex;
+    else blueLevelIndex.value = levelIndex;
+  }
+
+  function setAttacker(newAttacker: Attacker) {
+    attacker.value = newAttacker;
+  }
+
+  function setPending(winner: 'red' | 'blue' | null, result: RoundResult | null) {
     pendingWinner.value = winner;
     pendingResult.value = result;
   }
 
-  function confirm() {
-    if (pendingResult.value === null || pendingWinner.value === null || isGameOver.value) return;
-
-    history.value.push({
-      redLevelIndex: redLevelIndex.value,
-      blueLevelIndex: blueLevelIndex.value,
-      attacker: attacker.value,
-      lastTribute: lastTribute.value ? JSON.parse(JSON.stringify(lastTribute.value)) : null,
-    });
-
-    const result = pendingResult.value;
-    const winner = pendingWinner.value;
-
-    // 贡牌：根据 winner + result 计算 rankings
-    if (result === 3) {
-      lastTribute.value = {
-        type: 'double',
-        rankings: {
-          red: winner === 'red' ? [1, 2] : [3, 4],
-          blue: winner === 'blue' ? [1, 2] : [3, 4],
-        },
-      };
-    } else if (result === 2) {
-      lastTribute.value = {
-        type: 'single',
-        rankings: {
-          red: winner === 'red' ? [1, 3] : [2, 4],
-          blue: winner === 'blue' ? [1, 3] : [2, 4],
-        },
-      };
-    } else {
-      lastTribute.value = {
-        type: 'single',
-        rankings: {
-          red: winner === 'red' ? [1, 4] : [2, 3],
-          blue: winner === 'blue' ? [1, 4] : [2, 3],
-        },
-      };
-    }
-
-    // 升级与过A（百科：A级必打；过A=打A方头游且搭档不是末游；头游+末游→A1→A2→A3→回2）
-    const attackerLevel = attacker.value === 'red' ? redLevelIndex.value : blueLevelIndex.value;
-    const isInAZone = attackerLevel >= A_INDEX && attackerLevel <= A3_INDEX;
-
-    if (isInAZone && winner === attacker.value && result === 1) {
-      // 打A方头游+末游：A→A1→A2→A3→回2
-      const nextLevel =
-        attackerLevel === A_INDEX
-          ? A1_INDEX
-          : attackerLevel === A1_INDEX
-            ? A2_INDEX
-            : attackerLevel === A2_INDEX
-              ? A3_INDEX
-              : 0; // A3 不过回2
-      if (winner === 'red') {
-        redLevelIndex.value = nextLevel;
-      } else {
-        blueLevelIndex.value = nextLevel;
-      }
-    } else {
-      // 正常升级或过A
-      if (winner === 'red') {
-        redLevelIndex.value = Math.min(redLevelIndex.value + result, A_INDEX);
-      } else {
-        blueLevelIndex.value = Math.min(blueLevelIndex.value + result, A_INDEX);
-      }
-      if (isInAZone && winner === attacker.value && (result === 2 || result === 3)) {
-        isGameOver.value = true; // 过A，游戏结束
-      }
-    }
-
-    attacker.value = winner;
-    pendingResult.value = null;
-    pendingWinner.value = null;
+  function pushHistory(snapshot: GameSnapshot) {
+    history.value.push(snapshot);
   }
 
-  function undo() {
-    const lastSnapshot = history.value.pop();
-    if (lastSnapshot) {
-      redLevelIndex.value = lastSnapshot.redLevelIndex;
-      blueLevelIndex.value = lastSnapshot.blueLevelIndex;
-      attacker.value = lastSnapshot.attacker;
-      lastTribute.value = lastSnapshot.lastTribute;
-      isGameOver.value = false;
-    }
-    pendingResult.value = null;
-    pendingWinner.value = null;
+  function popHistory() {
+    return history.value.pop();
   }
 
-  function reset() {
+  function setLastTribute(tribute: TributeRelation | null) {
+    lastTribute.value = tribute;
+  }
+
+  function setGameOver(status: boolean) {
+    isGameOver.value = status;
+  }
+
+  function resetState() {
     redLevelIndex.value = 0;
     blueLevelIndex.value = 0;
     attacker.value = 'red';
@@ -134,6 +71,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   return {
+    // State
     redLevelIndex,
     blueLevelIndex,
     attacker,
@@ -142,11 +80,19 @@ export const useGameStore = defineStore('game', () => {
     history,
     lastTribute,
     isGameOver,
+    
+    // Getters
     currentLevel,
     isTie,
-    selectResult,
-    confirm,
-    undo,
-    reset,
+
+    // Actions (Atomic)
+    setLevel,
+    setAttacker,
+    setPending,
+    pushHistory,
+    popHistory,
+    setLastTribute,
+    setGameOver,
+    resetState,
   };
 });

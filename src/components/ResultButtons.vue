@@ -30,12 +30,12 @@ function handleClick(opt: { value: RoundResult }) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 w-full">
+  <div class="flex flex-col gap-2 lg:gap-3 w-full">
     <button
       v-for="opt in displayOptions"
       :key="opt.value"
       type="button"
-      class="relative group flex items-center justify-between px-5 py-3 min-h-[56px] rounded-2xl transition-all duration-200 active:scale-95 w-full border border-transparent"
+      class="relative flex items-center justify-between px-4 py-0 lg:px-6 lg:py-4 min-h-[44px] lg:min-h-[56px] rounded-xl lg:rounded-2xl transition-all duration-200 active:scale-95 w-full border border-transparent group"
       :class="[
         isActive(opt)
           ? side === 'red'
@@ -47,12 +47,12 @@ function handleClick(opt: { value: RoundResult }) {
       ]"
       @click="handleClick(opt)"
     >
-      <!-- 左侧：主要数值 -->
-      <span class="text-2xl font-semibold">{{ opt.main }}</span>
+      <!-- 左侧：大数字 -->
+      <span class="text-xl lg:text-3xl font-semibold leading-none">{{ opt.main }}</span>
       
-      <!-- 右侧：描述文本 -->
+      <!-- 右侧：小说明 -->
       <span 
-        class="text-sm font-medium opacity-80"
+        class="text-xs lg:text-sm font-medium leading-none"
         :class="isActive(opt) ? (side === 'red' ? 'text-white/90' : 'text-black/70') : 'text-gray-500'"
       >
         {{ opt.sub }}
