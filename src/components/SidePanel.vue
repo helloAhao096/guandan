@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { CircleArrowLeft, CircleArrowRight } from 'lucide-vue-next';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore, LEVELS } from '../store/gameStore';
 import { useGameControl } from '../composables/useGameControl';
 import ResultButtons from './ResultButtons.vue';
 import ConfirmActions from './ConfirmActions.vue';
@@ -31,6 +31,10 @@ const isAttacker = computed(() => store.attacker === props.side);
 // 游戏未开始时（双方都是 2，无历史）不显示箭头
 const showArrow = computed(() => isAttacker.value && store.history.length > 0);
 
+// 双方当前级数
+const redLevel = computed(() => LEVELS[store.redLevelIndex]);
+const blueLevel = computed(() => LEVELS[store.blueLevelIndex]);
+
 // 是否有待确认的结果且属于本方
 const canConfirm = computed(() => {
   return store.pendingResult !== null && store.pendingWinner === props.side;
@@ -41,7 +45,13 @@ const canUndo = computed(() => store.history.length > 0);
 </script>
 
 <template>
-  <div class="flex flex-col-reverse items-center gap-2 lg:gap-6 w-full h-full min-h-0 px-2 lg:px-4 py-2 lg:py-6">
+  <div class="side-panel-root relative flex flex-col-reverse items-center gap-2 lg:gap-6 w-full h-full min-h-0 px-2 lg:px-4 py-2 lg:py-6 overflow-hidden">
+    <!-- 中心 watermark：实心半透明灰色 -->
+    <div class="side-watermark" aria-hidden="true">
+      {{ side === 'red' ? redLevel : blueLevel }}
+    </div>
+    <!-- 主内容区：置于 watermark 之上 -->
+    <div class="relative z-10 flex flex-col-reverse items-center gap-2 lg:gap-6 w-full flex-1 min-h-0">
     <!-- 确认/撤销操作区 (最底层) -->
     <ConfirmActions
       class="flex-shrink-0 transition-opacity duration-200 w-full"
@@ -63,44 +73,63 @@ const canUndo = computed(() => store.history.length > 0);
       />
     </div>
 
-    <!-- 状态指示器 (最上层)：固定高度以防止布局跳动 -->
+    <!-- 状态指示器 (最上层)：箭头 -->
     <div
       class="flex-shrink-0 h-10 lg:h-24 w-full flex items-center justify-center overflow-visible"
     >
-      <Transition :name="side === 'red' ? 'arrow-in-left' : 'arrow-in-right'">
-        <span
-          v-if="showArrow"
-          class="arrow-wrapper inline-flex items-center justify-center w-full h-full max-w-10 max-h-10 lg:max-w-24 lg:max-h-24 min-w-8 min-h-8"
-        >
-          <svg class="absolute w-0 h-0" aria-hidden="true">
-            <defs>
-              <filter :id="`arrow-stroke-glow-${side}`" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
-                <feFlood flood-color="#F5B800" flood-opacity="0.9" result="color" />
-                <feComposite in="color" in2="blur2" operator="in" result="glow2" />
-                <feFlood flood-color="#F5B800" flood-opacity="0.5" result="color2" />
-                <feComposite in="color2" in2="blur1" operator="in" result="glow1" />
-                <feMerge>
-                  <feMergeNode in="glow2" />
-                  <feMergeNode in="glow1" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-          </svg>
-          <component
-            :is="side === 'red' ? CircleArrowLeft : CircleArrowRight"
-            :class="['arrow-icon w-full h-full text-[#F5B800]']"
-            :style="{ filter: `url(#arrow-stroke-glow-${side})` }"
-          />
-        </span>
-      </Transition>
+        <Transition :name="side === 'red' ? 'arrow-in-left' : 'arrow-in-right'">
+          <span
+            v-if="showArrow"
+            class="arrow-wrapper inline-flex items-center justify-center w-8 h-8 lg:w-16 lg:h-16 shrink-0"
+          >
+            <svg class="absolute w-0 h-0" aria-hidden="true">
+              <defs>
+                <filter :id="`arrow-stroke-glow-${side}`" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
+                  <feFlood flood-color="#22c55e" flood-opacity="0.9" result="color" />
+                  <feComposite in="color" in2="blur2" operator="in" result="glow2" />
+                  <feFlood flood-color="#22c55e" flood-opacity="0.5" result="color2" />
+                  <feComposite in="color2" in2="blur1" operator="in" result="glow1" />
+                  <feMerge>
+                    <feMergeNode in="glow2" />
+                    <feMergeNode in="glow1" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+            </svg>
+            <component
+              :is="side === 'red' ? CircleArrowLeft : CircleArrowRight"
+              :class="['arrow-icon w-full h-full text-[#22c55e]']"
+              :style="{ filter: `url(#arrow-stroke-glow-${side})` }"
+            />
+          </span>
+        </Transition>
+    </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* 中心 watermark：实心半透明灰色，作为背景弱化
+ */
+.side-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  font-size: clamp(2.5rem, 16vmin, 8rem);
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(115, 115, 115, 0.18);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 /* 箭头容器：透明背景 */
 .arrow-wrapper {
   background: transparent;

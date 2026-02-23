@@ -79,13 +79,13 @@ const bgClass = () => {
 </template>
 
 <style scoped>
-/* 分数数字：按视口比例自适应
- * - 移动端横屏/小屏：~20vmin，保证可读且不溢出
- * - 常规桌面：~24vmin，突出主视觉
- * - 超宽/大屏：clamp 上限 16rem 避免过大
+/* 分数数字：与 SidePanel watermark 互换后，主视觉更大
+ * - 小屏：6rem
+ * - 常规：28vw
+ * - 大屏：14rem 上限
  */
 .score-number {
-  font-size: clamp(3.5rem, 22vmin, 16rem);
+  font-size: clamp(6rem, 28vw, 14rem);
 }
 
 .slide-fade-enter-active {

@@ -42,7 +42,7 @@ const blueClipPath = computed(() => {
 
 <template>
   <!-- 外层容器：作为 ScoreCard 的“外框”，占视窗高度 80% -->
-  <div class="relative w-full max-w-md mx-auto h-[80vh] min-h-[200px] flex flex-col group transition-transform duration-500 hover:scale-[1.02]">
+  <div class="relative w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto h-[80vh] min-h-[200px] flex flex-col group transition-transform duration-500 hover:scale-[1.02]">
     
     <!-- 插槽：放置 ScoreCard -->
     <div class="relative z-10 w-full flex-1 min-h-0 rounded-3xl overflow-hidden flex flex-col">
