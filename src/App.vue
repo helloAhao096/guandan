@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Scoreboard from "@/pages/Scoreboard.vue";
+import { useWakeLock } from "@/composables/useWakeLock";
 import { Github, Globe, Mail } from "lucide-vue-next";
+
+useWakeLock();
 
 const GITHUB_URL = "https://github.com/helloAhao096/guandan";
 const BLOG_URL = "https://blog.mapin.net";

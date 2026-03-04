@@ -12,6 +12,7 @@
     "@lottiefiles/dotlottie-vue": "^0.11.1",
     "@tailwindcss/vite": "^4.2.0",
     "lucide-vue-next": "^0.575.0",
+    "nosleep.js": "^0.12.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21"
   },
