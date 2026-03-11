@@ -41,36 +41,36 @@ const blueClipPath = computed(() => {
 </script>
 
 <template>
-  <!-- 外层容器：整体下调一档 max-w（约 448–576px），为灯条与侧栏留空间，兼容多设备 -->
-  <div class="relative w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto h-[80vh] min-h-[200px] flex flex-col group transition-transform duration-300 hover:scale-[1.02]">
-    
-    <!-- 插槽：放置 ScoreCard -->
-    <div class="relative z-10 w-full flex-1 min-h-0 rounded-3xl overflow-hidden flex flex-col">
-      <slot />
+  <!-- 一劳永逸：外层 px-3 / py-1.5 预留灯条 6px 空间，内层高度少 24px，灯条始终在框内不被裁切 -->
+  <div class="relative w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto px-3 py-1.5 md:px-4 md:py-2 flex flex-col items-center group transition-transform duration-300 hover:scale-[1.02]">
+    <div class="relative w-full flex flex-col h-[calc(80vh-24px)] min-h-[176px]">
+      <!-- 插槽：放置 ScoreCard，z-10 在灯条之下 -->
+      <div class="relative z-10 w-full h-full min-h-0 rounded-3xl overflow-hidden flex flex-col">
+        <slot />
+      </div>
+
+      <!-- 1. 轨道底色（深灰色边框） -->
+      <div 
+        class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-white/10 pointer-events-none z-20"
+      ></div>
+
+      <!-- 2. 红方进度（左侧边框填充） -->
+      <div 
+        class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-red pointer-events-none z-20 transition-all duration-500 ease-out"
+        :style="{ 
+          clipPath: redClipPath,
+          filter: 'drop-shadow(0 0 8px rgb(var(--guandan-red-rgb) / 0.4))'
+        }"
+      ></div>
+
+      <!-- 3. 蓝方进度（右侧边框填充） -->
+      <div 
+        class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-blue pointer-events-none z-20 transition-all duration-500 ease-out"
+        :style="{ 
+          clipPath: blueClipPath,
+          filter: 'drop-shadow(0 0 8px rgb(var(--guandan-blue-rgb) / 0.4))'
+        }"
+      ></div>
     </div>
-
-    <!-- 1. 轨道底色（深灰色边框） -->
-    <div 
-      class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-white/10 pointer-events-none z-20"
-    ></div>
-
-    <!-- 2. 红方进度（左侧边框填充） -->
-    <div 
-      class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-red pointer-events-none z-20 transition-all duration-500 ease-out"
-      :style="{ 
-        clipPath: redClipPath,
-        filter: 'drop-shadow(0 0 8px rgb(var(--guandan-red-rgb) / 0.4))'
-      }"
-    ></div>
-
-    <!-- 3. 蓝方进度（右侧边框填充） -->
-    <div 
-      class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-blue pointer-events-none z-20 transition-all duration-500 ease-out"
-      :style="{ 
-        clipPath: blueClipPath,
-        filter: 'drop-shadow(0 0 8px rgb(var(--guandan-blue-rgb) / 0.4))'
-      }"
-    ></div>
-
   </div>
 </template>

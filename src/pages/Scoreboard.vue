@@ -31,8 +31,8 @@ const { showRotatePrompt } = useDeviceAdapt();
           <SidePanel side="red" />
         </aside>
 
-        <!-- 中央区域：p-2 为灯条（inset-[-6px] 外扩 6px）留出空间，避免被 overflow 裁剪 -->
-        <section class="relative z-0 flex flex-1 min-h-0 min-w-0 items-center justify-center overflow-hidden p-2 md:p-3">
+        <!-- 中央区域：灯条留白由 LevelProgressBars 内部 padding + 略减高度解决 -->
+        <section class="relative z-0 flex flex-1 min-h-0 min-w-0 items-center justify-center overflow-hidden">
           <LevelProgressBars>
             <ScoreCard class="flex-1 w-full max-w-full min-h-0" />
           </LevelProgressBars>
