@@ -91,10 +91,11 @@ const teamColorClass = (team: 'red' | 'blue') => {
     </div>
 
     <!-- 列表展示 (单贡/双贡通用) -->
+    <!-- gap-4 为皇冠（-top-3）预留空间，避免与上一项重叠 -->
     <TransitionGroup
       v-else
       tag="div"
-      class="w-full max-w-xs flex flex-col gap-3"
+      class="w-full max-w-xs flex flex-col gap-4"
       name="tribute-item"
     >
       <div 
@@ -119,14 +120,14 @@ const teamColorClass = (team: 'red' | 'blue') => {
           <div class="flex flex-col items-center mb-1">
             <span 
               class="text-[10px] font-bold leading-none"
-              :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+              :class="item.type === 'gold' ? 'text-guandan-gold' : 'text-gray-400'"
             >
               {{ item.label }}
             </span>
             <span 
               v-if="item.subLabel" 
               class="text-[8px] scale-90 leading-none mt-0.5 opacity-80"
-              :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+              :class="item.type === 'gold' ? 'text-guandan-gold' : 'text-gray-400'"
             >
               {{ item.subLabel }}
             </span>
@@ -140,14 +141,14 @@ const teamColorClass = (team: 'red' | 'blue') => {
              <!-- 流光动画 -->
              <div 
                class="absolute top-1/2 -translate-y-1/2 h-[2px] w-12 rounded-full blur-[1px] animate-shuttle"
-               :class="item.type === 'gold' ? 'bg-[#D4AF37]' : 'bg-gray-400'"
+               :class="item.type === 'gold' ? 'bg-guandan-gold' : 'bg-gray-400'"
              ></div>
 
              <!-- 箭头头 (心跳动画) -->
              <svg 
                viewBox="0 0 24 24" 
                class="w-3 h-3 absolute right-0 top-1/2 -translate-y-1/2 animate-pulse-fast transform-origin-center"
-               :class="item.type === 'gold' ? 'text-[#D4AF37]' : 'text-gray-400'"
+               :class="item.type === 'gold' ? 'text-guandan-gold' : 'text-gray-400'"
                fill="currentColor"
              >
                <path d="M12 2L20 12L12 22" stroke="none" />
@@ -162,8 +163,8 @@ const teamColorClass = (team: 'red' | 'blue') => {
             :class="teamColorClass(item.to)"
           >
             {{ item.to === 'red' ? '红' : '蓝' }}
-            <!-- 皇冠 -->
-            <div v-if="item.type === 'gold'" class="absolute -top-3 text-[#D4AF37] drop-shadow-sm">
+            <!-- 皇冠：-top-2.5 微调，避免与上一项 gap 冲突 -->
+            <div v-if="item.type === 'gold'" class="absolute -top-2.5 left-1/2 -translate-x-1/2 text-guandan-gold drop-shadow-sm">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                 <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
               </svg>

@@ -18,7 +18,7 @@ const EMAIL = "helloahao@icloud.com";
     We treat the app as a "device" or "card" floating in the center 
     rather than stretching to infinity.
   -->
-  <div class="w-full h-full bg-neutral-900 flex items-center justify-center overflow-hidden">
+  <div class="w-full h-full bg-guandan-surface flex items-center justify-center overflow-hidden">
     <!-- 
       Constrain the maximum width to avoid "scattered" UI on ultra-wide screens.
       1600px is a safe upper bound that keeps side panels reachable while feeling spacious.

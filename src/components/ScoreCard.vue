@@ -20,8 +20,8 @@ const textClass = () => {
   }
   // 使用 CSS 变量颜色，并增加发光效果
   return store.attacker === 'red' 
-    ? 'text-guandan-red drop-shadow-[0_0_8px_rgba(250,17,79,0.4)]' 
-    : 'text-guandan-blue drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]';
+    ? 'text-guandan-red drop-shadow-[0_0_8px_rgb(var(--guandan-red-rgb)/0.4)]' 
+    : 'text-guandan-blue drop-shadow-[0_0_8px_rgb(var(--guandan-blue-rgb)/0.4)]';
 };
 
 const bgClass = () => {

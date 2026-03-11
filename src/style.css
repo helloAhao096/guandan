@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  /* 惯蛋主色 RGB（用于 rgba/glow） */
+  --guandan-red-rgb: 250 17 79;
+  --guandan-blue-rgb: 0 240 255;
+
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
   --muted: 217.2 32.6% 17.5%;
@@ -46,6 +50,8 @@
   --radius-lg: var(--radius);
   --color-guandan-red: #FA114F;
   --color-guandan-blue: #00F0FF;
+  --color-guandan-gold: #D4AF37;
+  --color-guandan-surface: oklch(0.11 0.02 250);
   --color-guandan-track: #333333;
 
   /* Easing: 自然减速，避免 bounce/elastic */

@@ -36,15 +36,15 @@ function handleClick(opt: { value: RoundResult }) {
       v-for="opt in displayOptions"
       :key="opt.value"
       type="button"
-      class="relative flex flex-1 lg:flex-none flex-col lg:flex-row items-center justify-center lg:justify-between px-2 py-1.5 lg:px-6 lg:py-4 min-h-[48px] lg:min-h-[56px] min-w-0 rounded-lg lg:rounded-2xl transition-all duration-300 active:scale-95 w-full border group overflow-hidden gap-0.5 lg:gap-0"
+      class="relative flex flex-1 lg:flex-none flex-col lg:flex-row items-center justify-center lg:justify-between px-2 py-1.5 lg:px-6 lg:py-4 min-h-[48px] lg:min-h-[56px] min-w-0 rounded-lg lg:rounded-2xl transition-all duration-200 active:scale-95 w-full border group overflow-hidden gap-0.5 lg:gap-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
       :class="[
         isActive(opt)
           ? side === 'red'
-            ? 'bg-guandan-red border-guandan-red text-white shadow-[0_0_20px_-5px_rgba(250,17,79,0.6)]'
-            : 'bg-guandan-blue border-guandan-blue text-neutral-900 shadow-[0_0_20px_-5px_rgba(0,240,255,0.6)]'
+            ? 'bg-guandan-red border-guandan-red text-white shadow-[0_0_20px_-5px_rgb(var(--guandan-red-rgb)/0.6)]'
+            : 'bg-guandan-blue border-guandan-blue text-neutral-900 shadow-[0_0_20px_-5px_rgb(var(--guandan-blue-rgb)/0.6)]'
           : side === 'red'
-            ? 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-red/10 hover:border-guandan-red/30 hover:text-guandan-red hover:shadow-[0_0_15px_-5px_rgba(250,17,79,0.15)]'
-            : 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-blue/10 hover:border-guandan-blue/30 hover:text-guandan-blue hover:shadow-[0_0_15px_-5px_rgba(0,240,255,0.15)]',
+            ? 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-red/10 hover:border-guandan-red/30 hover:text-guandan-red hover:shadow-[0_0_15px_-5px_rgb(var(--guandan-red-rgb)/0.15)] focus-visible:ring-guandan-red'
+            : 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-blue/10 hover:border-guandan-blue/30 hover:text-guandan-blue hover:shadow-[0_0_15px_-5px_rgb(var(--guandan-blue-rgb)/0.15)] focus-visible:ring-guandan-blue',
       ]"
       :title="opt.sub"
       @click="handleClick(opt)"

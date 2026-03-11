@@ -41,8 +41,8 @@ const blueClipPath = computed(() => {
 </script>
 
 <template>
-  <!-- 外层容器：作为 ScoreCard 的“外框”，占视窗高度 80% -->
-  <div class="relative w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto h-[80vh] min-h-[200px] flex flex-col group transition-transform duration-500 hover:scale-[1.02]">
+  <!-- 外层容器：整体下调一档 max-w（约 448–576px），为灯条与侧栏留空间，兼容多设备 -->
+  <div class="relative w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto h-[80vh] min-h-[200px] flex flex-col group transition-transform duration-300 hover:scale-[1.02]">
     
     <!-- 插槽：放置 ScoreCard -->
     <div class="relative z-10 w-full flex-1 min-h-0 rounded-3xl overflow-hidden flex flex-col">
@@ -59,7 +59,7 @@ const blueClipPath = computed(() => {
       class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-red pointer-events-none z-20 transition-all duration-500 ease-out"
       :style="{ 
         clipPath: redClipPath,
-        filter: 'drop-shadow(0 0 8px rgba(250,17,79,0.4))'
+        filter: 'drop-shadow(0 0 8px rgb(var(--guandan-red-rgb) / 0.4))'
       }"
     ></div>
 
@@ -68,7 +68,7 @@ const blueClipPath = computed(() => {
       class="absolute inset-[-6px] rounded-[calc(1.5rem+6px)] border-[6px] border-guandan-blue pointer-events-none z-20 transition-all duration-500 ease-out"
       :style="{ 
         clipPath: blueClipPath,
-        filter: 'drop-shadow(0 0 8px rgba(0,240,255,0.4))'
+        filter: 'drop-shadow(0 0 8px rgb(var(--guandan-blue-rgb) / 0.4))'
       }"
     ></div>
 

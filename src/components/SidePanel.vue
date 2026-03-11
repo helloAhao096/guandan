@@ -73,14 +73,14 @@ const canUndo = computed(() => store.history.length > 0);
       />
     </div>
 
-    <!-- 状态指示器 (最上层)：箭头 -->
+    <!-- 状态指示器 (最上层)：箭头；容器与箭头按断点等比放大，保证多端比例协调 -->
     <div
-      class="flex-shrink-0 h-10 lg:h-24 w-full flex items-center justify-center overflow-visible"
+      class="flex-shrink-0 h-12 sm:h-14 lg:h-24 w-full flex items-center justify-center overflow-visible"
     >
         <Transition :name="side === 'red' ? 'arrow-in-left' : 'arrow-in-right'">
           <span
             v-if="showArrow"
-            class="arrow-wrapper inline-flex items-center justify-center w-8 h-8 lg:w-16 lg:h-16 shrink-0"
+            class="arrow-wrapper inline-flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 lg:w-20 lg:h-20 shrink-0"
           >
             <svg class="absolute w-0 h-0" aria-hidden="true">
               <defs>
@@ -142,7 +142,7 @@ const canUndo = computed(() => store.history.length > 0);
   overflow: visible;
 }
 
-/* 红方（左侧）：箭头从左侧滑入 */
+/* 红方（左侧）：箭头从左侧滑入；位移随断点略增，与箭头尺寸成比例 */
 .arrow-in-left-enter-active,
 .arrow-in-left-leave-active {
   transition: all 0.4s var(--ease-out-expo);
@@ -153,7 +153,15 @@ const canUndo = computed(() => store.history.length > 0);
 }
 .arrow-in-left-leave-to {
   opacity: 0;
-  transform: translateX(-16px);
+  transform: translateX(-20px);
+}
+@media (min-width: 1024px) {
+  .arrow-in-left-enter-from {
+    transform: translateX(-32px);
+  }
+  .arrow-in-left-leave-to {
+    transform: translateX(-24px);
+  }
 }
 
 /* 蓝方（右侧）：箭头从右侧滑入 */
@@ -167,6 +175,14 @@ const canUndo = computed(() => store.history.length > 0);
 }
 .arrow-in-right-leave-to {
   opacity: 0;
-  transform: translateX(16px);
+  transform: translateX(20px);
+}
+@media (min-width: 1024px) {
+  .arrow-in-right-enter-from {
+    transform: translateX(32px);
+  }
+  .arrow-in-right-leave-to {
+    transform: translateX(24px);
+  }
 }
 </style>

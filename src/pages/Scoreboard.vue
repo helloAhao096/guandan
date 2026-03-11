@@ -10,7 +10,7 @@ const { showRotatePrompt } = useDeviceAdapt();
 </script>
 
 <template>
-  <div class="relative w-full h-full min-h-0 bg-neutral-900 flex flex-col overflow-hidden text-gray-100 font-sans">
+  <div class="relative w-full h-full min-h-0 bg-guandan-surface flex flex-col overflow-hidden text-gray-100 font-sans">
     <!-- 竖屏窄屏提示 -->
     <RotatePrompt :show="showRotatePrompt" />
 
@@ -24,22 +24,22 @@ const { showRotatePrompt } = useDeviceAdapt();
         <LevelStrip />
       </header> -->
 
-      <!-- 中部：左右对称 -->
-      <main class="flex flex-1 min-h-0 overflow-hidden items-stretch justify-between gap-2 md:gap-4 lg:gap-8 px-4 py-4 md:px-8 md:py-6 lg:px-12 max-w-full w-full">
+      <!-- 中部：左右对称。侧栏 z-10 确保始终置于中央区域之上，避免被遮挡 -->
+      <main class="flex flex-1 min-h-0 overflow-hidden items-stretch justify-between gap-3 md:gap-6 lg:gap-8 px-4 py-4 md:px-6 md:py-5 lg:px-10 lg:py-6 max-w-full w-full">
         <!-- 左侧边栏：红方 -->
-        <aside class="flex-shrink-0 flex items-stretch justify-start min-w-[120px] sm:min-w-[160px] md:min-w-[200px] lg:min-w-[260px] w-[22vw] md:w-[20vw] lg:w-[18vw] max-w-[280px]">
+        <aside class="relative z-10 flex-shrink-0 flex items-stretch justify-start min-w-[120px] sm:min-w-[160px] md:min-w-[200px] lg:min-w-[260px] w-[22vw] md:w-[20vw] lg:w-[18vw] max-w-[280px]">
           <SidePanel side="red" />
         </aside>
 
-        <!-- 中央区域：左右进度条 + 积分卡片 -->
-        <section class="flex flex-1 min-h-0 min-w-0 items-center justify-center">
+        <!-- 中央区域：p-2 为灯条（inset-[-6px] 外扩 6px）留出空间，避免被 overflow 裁剪 -->
+        <section class="relative z-0 flex flex-1 min-h-0 min-w-0 items-center justify-center overflow-hidden p-2 md:p-3">
           <LevelProgressBars>
             <ScoreCard class="flex-1 w-full max-w-full min-h-0" />
           </LevelProgressBars>
         </section>
 
         <!-- 右侧边栏：蓝方 -->
-        <aside class="flex-shrink-0 flex items-stretch justify-end min-w-[120px] sm:min-w-[160px] md:min-w-[200px] lg:min-w-[260px] w-[22vw] md:w-[20vw] lg:w-[18vw] max-w-[280px]">
+        <aside class="relative z-10 flex-shrink-0 flex items-stretch justify-end min-w-[120px] sm:min-w-[160px] md:min-w-[200px] lg:min-w-[260px] w-[22vw] md:w-[20vw] lg:w-[18vw] max-w-[280px]">
           <SidePanel side="blue" />
         </aside>
       </main>
