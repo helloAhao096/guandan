@@ -89,11 +89,11 @@ const bgClass = () => {
 }
 
 .slide-fade-enter-active {
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性效果 */
+  transition: all 0.4s var(--ease-out-expo);
 }
 
 .slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s var(--ease-out-quart);
 }
 
 .slide-fade-enter-from {
@@ -111,7 +111,7 @@ const bgClass = () => {
 /* 皇冠容器高度过渡：为分数区域预留空间，避免突兀挤压 */
 /* 皇冠内部：延迟淡入 + 轻微缩放，与容器展开同步 */
 .crown-inner-enter-active {
-  transition: opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+  transition: opacity 0.6s ease 0.2s, transform 0.6s var(--ease-out-expo) 0.2s;
 }
 .crown-inner-enter-from {
   opacity: 0;

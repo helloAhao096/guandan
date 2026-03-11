@@ -91,7 +91,12 @@ const teamColorClass = (team: 'red' | 'blue') => {
     </div>
 
     <!-- 列表展示 (单贡/双贡通用) -->
-    <div v-else class="w-full max-w-xs flex flex-col gap-3">
+    <TransitionGroup
+      v-else
+      tag="div"
+      class="w-full max-w-xs flex flex-col gap-3"
+      name="tribute-item"
+    >
       <div 
         v-for="(item, index) in tributeItems" 
         :key="index"
@@ -167,11 +172,23 @@ const teamColorClass = (team: 'red' | 'blue') => {
           <span class="text-[10px] text-gray-500 font-medium w-6 text-center">{{ item.toLabel }}</span>
         </div>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
 <style scoped>
+/* 进贡条目入场：淡入 + 自下而上 */
+.tribute-item-enter-active {
+  transition: opacity 0.35s var(--ease-out-expo), transform 0.35s var(--ease-out-expo);
+}
+.tribute-item-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.tribute-item-move {
+  transition: transform 0.35s var(--ease-out-quart);
+}
+
 @keyframes shuttle {
   0% { transform: translate(-150%, -50%); opacity: 0; }
   50% { opacity: 1; }
@@ -179,7 +196,7 @@ const teamColorClass = (team: 'red' | 'blue') => {
 }
 
 .animate-shuttle {
-  animation: shuttle 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: shuttle 1.5s var(--ease-out-quart) infinite;
 }
 
 @keyframes pulse-fast {
@@ -188,7 +205,7 @@ const teamColorClass = (team: 'red' | 'blue') => {
 }
 
 .animate-pulse-fast {
-  animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-fast 1.5s var(--ease-out-quart) infinite;
   transform-origin: center;
 }
 </style>

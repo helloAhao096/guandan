@@ -145,7 +145,7 @@ const canUndo = computed(() => store.history.length > 0);
 /* 红方（左侧）：箭头从左侧滑入 */
 .arrow-in-left-enter-active,
 .arrow-in-left-leave-active {
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s var(--ease-out-expo);
 }
 .arrow-in-left-enter-from {
   opacity: 0;
@@ -159,7 +159,7 @@ const canUndo = computed(() => store.history.length > 0);
 /* 蓝方（右侧）：箭头从右侧滑入 */
 .arrow-in-right-enter-active,
 .arrow-in-right-leave-active {
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s var(--ease-out-expo);
 }
 .arrow-in-right-enter-from {
   opacity: 0;
