@@ -45,13 +45,13 @@ const canUndo = computed(() => store.history.length > 0);
 </script>
 
 <template>
-  <div class="side-panel-root relative flex flex-col-reverse items-center gap-2 lg:gap-6 w-full h-full min-h-0 px-2 lg:px-4 py-2 lg:py-6 overflow-hidden">
+  <div class="side-panel-root relative flex flex-col-reverse items-stretch gap-2 sm:gap-3 lg:gap-6 w-full h-full min-h-0 px-2 sm:px-3 lg:px-4 py-2 sm:py-4 lg:py-6 overflow-hidden">
     <!-- 中心 watermark：实心半透明灰色 -->
     <div class="side-watermark" aria-hidden="true">
       {{ side === 'red' ? redLevel : blueLevel }}
     </div>
     <!-- 主内容区：置于 watermark 之上 -->
-    <div class="relative z-10 flex flex-col-reverse items-center gap-2 lg:gap-6 w-full flex-1 min-h-0">
+    <div class="relative z-10 flex flex-col-reverse items-stretch gap-2 sm:gap-3 lg:gap-6 w-full flex-1 min-h-0">
     <!-- 确认/撤销操作区 (最底层) -->
     <ConfirmActions
       class="flex-shrink-0 transition-opacity duration-200 w-full"
@@ -63,8 +63,8 @@ const canUndo = computed(() => store.history.length > 0);
       @undo="handleUndo"
     />
 
-    <!-- 结果按钮组 (中间层，占主要空间) -->
-    <div class="flex-1 min-h-0 w-full flex flex-col justify-center overflow-y-auto overflow-x-hidden py-1 lg:py-2">
+    <!-- 结果按钮组 (中间层)：移动端单行无滚动，大屏垂直堆叠 -->
+    <div class="flex-1 min-h-0 w-full flex flex-col justify-center overflow-hidden py-1 lg:py-2">
       <ResultButtons
         :side="side"
         :selected-result="store.pendingResult"

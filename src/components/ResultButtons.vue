@@ -11,14 +11,14 @@ const emit = defineEmits<{
   select: [result: RoundResult];
 }>();
 
-const options: { main: string; sub: string; value: RoundResult }[] = [
+const options: { main: string; sub: string; value: RoundResult | 0 }[] = [
   { main: '+3', sub: '头/二', value: 3 },
   { main: '+2', sub: '头/三', value: 2 },
   { main: '+1', sub: '头/末', value: 1 },
   { main: '+0', sub: '双下', value: 0 },
-]; 
+];
 
-const displayOptions = options.filter(o => o.value > 0);
+const displayOptions = options.filter((o): o is { main: string; sub: string; value: RoundResult } => o.value > 0);
 
 function isActive(opt: { value: RoundResult }) {
   return props.selectedWinner === props.side && props.selectedResult === opt.value;
@@ -30,12 +30,13 @@ function handleClick(opt: { value: RoundResult }) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 lg:gap-3 w-full">
+  <!-- 移动端：水平单行，3 个按钮全部可见无滚动；大屏：垂直堆叠 -->
+  <div class="flex flex-row gap-1.5 sm:gap-2 lg:flex-col lg:gap-3 w-full flex-shrink-0">
     <button
       v-for="opt in displayOptions"
       :key="opt.value"
       type="button"
-      class="relative flex items-center justify-between px-4 py-0 lg:px-6 lg:py-4 min-h-[44px] lg:min-h-[56px] rounded-xl lg:rounded-2xl transition-all duration-300 active:scale-95 w-full border group overflow-hidden"
+      class="relative flex flex-1 lg:flex-none flex-col lg:flex-row items-center justify-center lg:justify-between px-2 py-1.5 lg:px-6 lg:py-4 min-h-[48px] lg:min-h-[56px] min-w-0 rounded-lg lg:rounded-2xl transition-all duration-300 active:scale-95 w-full border group overflow-hidden gap-0.5 lg:gap-0"
       :class="[
         isActive(opt)
           ? side === 'red'
@@ -45,6 +46,7 @@ function handleClick(opt: { value: RoundResult }) {
             ? 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-red/10 hover:border-guandan-red/30 hover:text-guandan-red hover:shadow-[0_0_15px_-5px_rgba(250,17,79,0.15)]'
             : 'bg-neutral-800/40 border-white/5 text-neutral-400 hover:bg-guandan-blue/10 hover:border-guandan-blue/30 hover:text-guandan-blue hover:shadow-[0_0_15px_-5px_rgba(0,240,255,0.15)]',
       ]"
+      :title="opt.sub"
       @click="handleClick(opt)"
     >
       <!-- 激活状态下的光效背景 -->
@@ -54,19 +56,19 @@ function handleClick(opt: { value: RoundResult }) {
         :class="side === 'red' ? 'from-white/0 via-white/30 to-white/0' : 'from-black/0 via-black/10 to-black/0'"
       ></div>
 
-      <!-- 左侧：大数字 -->
+      <!-- 主数字 -->
       <span 
-        class="text-xl lg:text-3xl font-bold leading-none tracking-tight transition-transform duration-300 group-hover:scale-105"
+        class="text-base lg:text-3xl font-bold leading-none tracking-tight transition-transform duration-300 group-hover:scale-105"
         :class="isActive(opt) ? 'scale-105' : ''"
       >
         {{ opt.main }}
       </span>
       
-      <!-- 右侧：小说明 -->
+      <!-- 小说明：移动端垂直排在数字下方、缩小字号；sm+ 水平排在右侧 -->
       <span 
-        class="text-xs lg:text-sm font-medium leading-none transition-colors duration-200"
+        class="text-[10px] lg:text-sm font-medium leading-none transition-colors duration-200 opacity-80"
         :class="isActive(opt) 
-          ? (side === 'red' ? 'text-white/80' : 'text-neutral-900/70') 
+          ? (side === 'red' ? 'text-white/90' : 'text-neutral-900/80') 
           : 'text-neutral-500 group-hover:text-current'"
       >
         {{ opt.sub }}
